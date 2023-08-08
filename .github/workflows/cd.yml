@@ -36,6 +36,7 @@ jobs:
         with:
           name: github-pages
           path: dist
+        continue-on-error: true
       - run: ls && ls dist
       - run: cp -r out dist/${{ github.event.number }}
       - run: ls && ls dist
