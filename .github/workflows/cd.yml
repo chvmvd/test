@@ -41,7 +41,7 @@ jobs:
             build-
           path: dist
       - run: ls
-      - run: mkdir dist/${{ github.event.number }}
+      - run: mkdir -p dist/${{ github.event.number }}
       - run: cp -r out dist/${{ github.event.number }}
       - run: ls
       - run: ls dist
