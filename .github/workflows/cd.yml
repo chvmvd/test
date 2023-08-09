@@ -31,6 +31,18 @@ jobs:
         run: npm ci
       - name: Build
         run: npm run build
+      - name: Upload Artifact
+        uses: actions/upload-pages-artifact@v2
+        with:
+          path: dist
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
       - name: Get Current Time
         id: get-time
         run: echo "time=$(/bin/date -u "+%Y%m%d%H%M%S")" >> $GITHUB_OUTPUT
@@ -55,18 +67,6 @@ jobs:
         with:
           key: artifact-${{ steps.get-time.outputs.time }}
           path: dist
-      - name: Upload Artifact
-        uses: actions/upload-pages-artifact@v2
-        with:
-          path: dist
-
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v2
