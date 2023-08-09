@@ -1,8 +1,8 @@
-name: Deploy Next.js site to Pages
+name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: ["main"]
+    branches: [main, master]
   pull_request:
 
   workflow_dispatch:
@@ -13,46 +13,49 @@ permissions:
   id-token: write
 
 concurrency:
-  group: "pages"
+  group: pages
   cancel-in-progress: false
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout Code
         uses: actions/checkout@v3
-      - name: Setup Node
+      - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: "16"
+          node-version: 18
           cache: npm
-      - name: Install dependencies
+      - name: Install Packages
         run: npm ci
-      - name: Build with Next.js
+      - name: Build
         run: npm run build
-      - name: Get time
+      - name: Get Current Time
         id: get-time
         run: echo "time=$(/bin/date -u "+%Y%m%d%H%M%S")" >> $GITHUB_OUTPUT
         shell: bash
-      - run: mkdir -p dist/${{ github.event.number }}
-      - run: mv dist dist/${{ github.event.number }}
-      - uses: actions/cache/restore@v3
+      - name: Create Temporary Directory
+        run: mkdir -p deploy_temp
+      - name: Move dist to Temporary Directory
+        run: mv dist deploy_temp
+      - name: Get Previous Artifact
+        uses: actions/cache/restore@v3
         with:
           key: artifact-${{ steps.get-time.outputs.time }}
           restore-keys: |
             artifact-
           path: dist
-      #   - run: ls
-      #   - run: cp -r out/* dist/${{ github.event.number }}
-      #   - run: ls
-      - run: ls dist
-      - run: ls dist/${{ github.event.number }}
-      - uses: actions/cache/save@v3
+      - name: Create New Artifact Directory
+        run: mkdir -p dist/pr-preview/pr-${{ github.event.number }}
+      - name: Copy Previous Artifact to New Artifact Directory
+        run: cp -r deploy_temp/* dist/pr-preview/pr-${{ github.event.number }}
+      - name: Save Artifact for Next Run
+        uses: actions/cache/save@v3
         with:
-          key: build-${{ steps.get-time.outputs.time }}
+          key: artifact-${{ steps.get-time.outputs.time }}
           path: dist
-      - name: Upload artifact
+      - name: Upload Artifact
         uses: actions/upload-pages-artifact@v2
         with:
           path: dist
