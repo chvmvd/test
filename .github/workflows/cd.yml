@@ -43,11 +43,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     steps:
-      - name: Download Artifact
-        uses: actions/download-artifact@v2
-        with:
-          name: github-pages
-          path: deploy_temp
       - name: Get Current Time
         id: get-time
         run: echo "time=$(/bin/date -u "+%Y%m%d%H%M%S")" >> $GITHUB_OUTPUT
@@ -65,8 +60,13 @@ jobs:
           path: dist
       - name: Create New Artifact Directory
         run: mkdir -p dist/pr-preview/pr-${{ github.event.number }}
-      - name: Copy Previous Artifact to New Artifact Directory
-        run: cp -r deploy_temp/* dist/pr-preview/pr-${{ github.event.number }}
+      #   - name: Copy Previous Artifact to New Artifact Directory
+      #     run: cp -r deploy_temp/* dist/pr-preview/pr-${{ github.event.number }}
+      - name: Download Artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: github-pages
+          path: dist/pr-preview/pr-${{ github.event.number }}
       - name: Save Artifact for Next Run
         uses: actions/cache/save@v3
         with:
