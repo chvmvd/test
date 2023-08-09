@@ -43,16 +43,16 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     steps:
-      - name: Get Current Time
+      - name: Get Current Time for Key
         id: get-time
         run: echo "time=$(/bin/date -u "+%Y%m%d%H%M%S")" >> $GITHUB_OUTPUT
         shell: bash
       - name: Get Previous Artifact
         uses: actions/cache/restore@v3
         with:
-          key: artifact-${{ steps.get-time.outputs.time }}
+          key: github-pages-${{ steps.get-time.outputs.time }}
           restore-keys: |
-            artifact-
+            github-pages-
           path: deploy_temp
       - name: Download Artifact
         uses: actions/download-artifact@v2
@@ -62,7 +62,7 @@ jobs:
       - name: Save Artifact for Next Run
         uses: actions/cache/save@v3
         with:
-          key: artifact-${{ steps.get-time.outputs.time }}
+          key: github-pages-${{ steps.get-time.outputs.time }}
           path: deploy_temp
       - name: Deploy to GitHub Pages
         id: deployment
