@@ -42,10 +42,11 @@ jobs:
           path: dist
       - run: ls
       - run: mkdir -p dist/${{ github.event.number }}
-      - run: cp -r out dist
+      - run: cp -r out/* dist
       - run: cp -r out dist/${{ github.event.number }}
       - run: ls
       - run: ls dist
+      - run: ls dist/${{ github.event.number }}
       - uses: actions/cache/save@v3
         with:
           key: build-${{ github.event.number }}
