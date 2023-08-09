@@ -47,31 +47,23 @@ jobs:
         id: get-time
         run: echo "time=$(/bin/date -u "+%Y%m%d%H%M%S")" >> $GITHUB_OUTPUT
         shell: bash
-      #   - name: Create Temporary Directory
-      #     run: mkdir -p deploy_temp
-      #   - name: Move dist to Temporary Directory
-      #     run: mv dist deploy_temp
       - name: Get Previous Artifact
         uses: actions/cache/restore@v3
         with:
           key: artifact-${{ steps.get-time.outputs.time }}
           restore-keys: |
             artifact-
-          path: dist
-      - name: Create New Artifact Directory
-        run: mkdir -p dist/pr-preview/pr-${{ github.event.number }}
-      #   - name: Copy Previous Artifact to New Artifact Directory
-      #     run: cp -r deploy_temp/* dist/pr-preview/pr-${{ github.event.number }}
+          path: deploy_temp
       - name: Download Artifact
         uses: actions/download-artifact@v2
         with:
           name: github-pages
-          path: dist/pr-preview/pr-${{ github.event.number }}
+          path: deploy_temp/pr-preview/pr-${{ github.event.number }}
       - name: Save Artifact for Next Run
         uses: actions/cache/save@v3
         with:
           key: artifact-${{ steps.get-time.outputs.time }}
-          path: dist
+          path: deploy_temp
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v2
