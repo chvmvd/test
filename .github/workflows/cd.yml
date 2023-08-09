@@ -33,15 +33,20 @@ jobs:
       - run: mv dist out
       - run: ls
       - run: ls out
-      - uses: actions/download-artifact@v3
+      - uses: actions/cache/restore@v3
         with:
-          name: github-pages
+          key: |
+            build-${{ github.event.number }}
+            build-
           path: dist
-        continue-on-error: true
       - run: ls
       - run: cp -r out dist/${{ github.event.number }}
       - run: ls
       - run: ls dist
+      - uses: actions/cache/save@v3
+        with:
+          key: build-${{ github.event.number }}
+          path: dist
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v2
         with:
