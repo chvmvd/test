@@ -43,14 +43,19 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     steps:
+      - name: Download Artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: github-pages
+          path: deploy_temp
       - name: Get Current Time
         id: get-time
         run: echo "time=$(/bin/date -u "+%Y%m%d%H%M%S")" >> $GITHUB_OUTPUT
         shell: bash
-      - name: Create Temporary Directory
-        run: mkdir -p deploy_temp
-      - name: Move dist to Temporary Directory
-        run: mv dist deploy_temp
+      #   - name: Create Temporary Directory
+      #     run: mkdir -p deploy_temp
+      #   - name: Move dist to Temporary Directory
+      #     run: mv dist deploy_temp
       - name: Get Previous Artifact
         uses: actions/cache/restore@v3
         with:
