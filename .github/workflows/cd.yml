@@ -40,7 +40,9 @@ jobs:
             build-
           path: dist
       - run: ls
-      - run: cp -r out dist/${{ github.event.number }}
+      - env:
+          PR_NUMBER: ${{ github.event.number }}
+        run: cp -r out dist/$PR_NUMBER
       - run: ls
       - run: ls dist
       - uses: actions/cache/save@v3
