@@ -1,0 +1,34 @@
+name: name
+author: WATAHIKI Yuto
+description: description
+
+runs:
+  using: composite
+  steps:
+    - name: Get Current Time for Key
+      id: get-time
+      run: echo "time=$(/bin/date -u "+%Y%m%d%H%M%S")" >> $GITHUB_OUTPUT
+      shell: bash
+    - name: Get Previous Artifact
+      uses: actions/cache/restore@v3
+      with:
+        key: github-pages-${{ steps.get-time.outputs.time }}
+        restore-keys: |
+          github-pages-
+        path: deploy_temp
+    - name: Download Artifact
+      uses: actions/download-artifact@v2
+      with:
+        name: github-pages
+        path: deploy_temp/pr-preview/pr-${{ github.event.number }}
+    - name: Save Artifact for Next Run
+      uses: actions/cache/save@v3
+      with:
+        key: github-pages-${{ steps.get-time.outputs.time }}
+        path: deploy_temp
+    - name: Upload Artifact
+      uses: actions/upload-pages-artifact@v2
+      with:
+        path: deploy_temp
+    - name: Deploy to GitHub Pages
+      uses: actions/deploy-pages@v2

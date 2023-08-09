@@ -1,8 +1,8 @@
-name: Deploy Next.js site to Pages
+name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: ["main"]
+    branches: [main, master]
   pull_request:
 
   workflow_dispatch:
@@ -13,44 +13,25 @@ permissions:
   id-token: write
 
 concurrency:
-  group: "pages"
+  group: pages
   cancel-in-progress: false
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout Code
         uses: actions/checkout@v3
-      - name: Setup Node
+      - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: "16"
+          node-version: 18
           cache: npm
-      - name: Install dependencies
+      - name: Install Packages
         run: npm ci
-      - name: Build with Next.js
+      - name: Build
         run: npm run build
-      - run: mv dist out
-      - run: ls
-      - run: ls out
-      - uses: actions/cache/restore@v3
-        with:
-          key: |
-            build-${{ github.event.number }}
-            build-
-          path: dist
-      - run: ls
-      - run: mkdir -p dist/${{ github.event.number }}
-      - run: cp -r out dist
-      - run: cp -r out dist/${{ github.event.number }}
-      - run: ls
-      - run: ls dist
-      - uses: actions/cache/save@v3
-        with:
-          key: build-${{ github.event.number }}
-          path: dist
-      - name: Upload artifact
+      - name: Upload Artifact
         uses: actions/upload-pages-artifact@v2
         with:
           path: dist
@@ -62,6 +43,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     steps:
-      - name: Deploy to GitHub Pages
+      - uses: actions/checkout@v3
+      - uses: ./
         id: deployment
-        uses: actions/deploy-pages@v2
