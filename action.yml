@@ -43,12 +43,11 @@ runs:
         name: github-pages
         path: artifact_temp
 
+    - name: Extract Artifact
+      run: tar -xf artifact_temp/artifact.tar && ls -la artifact_temp
+      shell: bash
     - run: mv artifact_temp/* ${{ steps.download-path.outputs.result }}
       shell: bash
-
-    # - name: Extract Artifact
-    #   run: tar -xf ${{ steps.download-path.outputs.result }}/artifact.tar && ls -la ${{ steps.download-path.outputs.result }}
-    #   shell: bash
 
     - name: Save Artifact for Next Run
       uses: actions/cache/save@v3
