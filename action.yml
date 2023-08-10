@@ -47,7 +47,7 @@ runs:
       shell: bash
 
     - name: Extract Artifact
-      run: ls -la ${{ steps.download-path.outputs.result }} && tar -x deploy_temp/pr-preview/pr-4/artifact.tar
+      run: tar -xf ${{ steps.download-path.outputs.result }}/artifact.tar
       shell: bash
 
     - name: Save Artifact for Next Run
