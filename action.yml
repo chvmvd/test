@@ -44,10 +44,7 @@ runs:
         path: ${{ steps.download-path.outputs.result }}
 
     - name: Extract Artifact
-      run: tar -xf ${{ steps.download-path.outputs.result }}/artifact.tar
-      shell: bash
-
-    - run: ls -la ${{ steps.download-path.outputs.result }}
+      run: tar -xf ${{ steps.download-path.outputs.result }}/artifact.tar && ls -la ${{ steps.download-path.outputs.result }}
       shell: bash
 
     - name: Save Artifact for Next Run
