@@ -48,7 +48,7 @@ runs:
       shell: bash
 
     - name: Move Artifact
-      run: mv artifact_temp/* ${{ steps.download-path.outputs.result }}
+      run: mkdir -p ${{ steps.download-path.outputs.result }} && mv artifact_temp/* ${{ steps.download-path.outputs.result }}
       shell: bash
 
     - name: Save Artifact for Next Run
