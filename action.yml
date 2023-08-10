@@ -24,15 +24,15 @@ runs:
       with:
         script: |
           const basePath = "deploy_temp";
-          const githubEventName =${{ github.event_name }}; // "push" or "pull_request"
+          const githubEventName = "${{ github.event_name }}"; // "push" or "pull_request"
           if (githubEventName === "push") {
-            const githubBranchName = ${{ github.ref_name }};
+            const githubBranchName = "${{ github.ref_name }}";
             if (githubBranchName === "main" || githubBranchName === "master") {
               return basePath;
             }
             return `${basePath}/${githubBranchName}`;
           } else if (githubEventName === "pull_request") {
-            const githubPullRequestNumber = ${{ github.event.number }}; // <pr-number>
+            const githubPullRequestNumber = "${{ github.event.number }}"; // <pr-number>
             return `${basePath}/pr-preview/pr-${githubPullRequestNumber}`;
           }
         result-encoding: string
