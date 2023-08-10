@@ -41,11 +41,14 @@ runs:
       uses: actions/download-artifact@v2
       with:
         name: github-pages
-        path: ${{ steps.download-path.outputs.result }}
+        path: artifact_temp
 
-    - name: Extract Artifact
-      run: tar -xf ${{ steps.download-path.outputs.result }}/artifact.tar && ls -la ${{ steps.download-path.outputs.result }}
+    - run: mv artifact_temp/* ${{ steps.download-path.outputs.result }}
       shell: bash
+
+    # - name: Extract Artifact
+    #   run: tar -xf ${{ steps.download-path.outputs.result }}/artifact.tar && ls -la ${{ steps.download-path.outputs.result }}
+    #   shell: bash
 
     - name: Save Artifact for Next Run
       uses: actions/cache/save@v3
