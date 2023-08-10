@@ -6,31 +6,57 @@ runs:
   using: composite
   steps:
     - name: Get Current Time for Key
-      id: get-time
-      run: echo "time=$(/bin/date -u "+%Y%m%d%H%M%S")" >> $GITHUB_OUTPUT
+      id: get-current-time
+      run: echo "current_time=$(/bin/date -u "+%Y%m%d%H%M%S")" >> $GITHUB_OUTPUT
       shell: bash
+
     - name: Get Previous Artifact
       uses: actions/cache/restore@v3
       with:
-        key: github-pages-${{ steps.get-time.outputs.time }}
+        key: github-pages-${{ steps.get-current-time.outputs.current_time }}
         restore-keys: |
           github-pages-
         path: deploy_temp
+
+    - name: Determine Where to Download Artifact
+      id: download-path
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const basePath = "deploy_temp";
+          const githubEventName =${{ github.event_name }}; // "push" or "pull_request"
+          if (githubEventName === "push") {
+            const githubBranchName = ${{ github.ref_name }};
+            if (githubBranchName === "main" || githubBranchName === "master") {
+              return basePath;
+            }
+            return `${basePath}/${githubBranchName}`;
+          } else if (githubEventName === "pull_request") {
+            const githubPullRequestNumber = ${{ github.event.number }}; // <pr-number>
+            return `${basePath}/pr-preview/pr-${githubPullRequestNumber}`;
+          }
+        result-encoding: string
+
     - name: Download Artifact
       uses: actions/download-artifact@v2
       with:
         name: github-pages
-        path: deploy_temp/pr-preview/pr-${{ github.event.number }}
-    # - run: tar -x deploy_temp/pr-preview/pr-${{ github.event.number }}/artifact.tar
-    #   shell: bash
+        path: ${{ steps.download-path.outputs.result }}
+
+    - name: Extract Artifact
+      run: tar -x ${{ steps.download-path.outputs.result }}/artifact.tar
+      shell: bash
+
     - name: Save Artifact for Next Run
       uses: actions/cache/save@v3
       with:
-        key: github-pages-${{ steps.get-time.outputs.time }}
+        key: github-pages-${{ steps.get-current-time.outputs.current_time }}
         path: deploy_temp
+
     - name: Upload Artifact
       uses: actions/upload-pages-artifact@v2
       with:
         path: deploy_temp
+
     - name: Deploy to GitHub Pages
       uses: actions/deploy-pages@v2
