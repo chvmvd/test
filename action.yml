@@ -1,4 +1,4 @@
-name: name
+name: Deploy to GitHub Pages and Deploy PR Preview
 author: WATAHIKI Yuto
 description: description
 
@@ -42,6 +42,9 @@ runs:
       with:
         name: github-pages
         path: ${{ steps.download-path.outputs.result }}
+
+    - run: ls -la ${{ steps.download-path.outputs.result }}
+      shell: bash
 
     - name: Extract Artifact
       run: tar -x ${{ steps.download-path.outputs.result }}/artifact.tar
