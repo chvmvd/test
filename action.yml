@@ -41,10 +41,18 @@ runs:
       uses: actions/download-artifact@v2
       with:
         name: github-pages
-        path: ${{ steps.download-path.outputs.result }}
+        path: artifact_temp
 
     - name: Extract Artifact
-      run: cd ${{ steps.download-path.outputs.result }} && tar -xvf artifact.tar
+      run: cd artifact_temp && tar -xvf artifact.tar && rm artifact.tar
+      shell: bash
+
+    - name: Remove Old Artifact If Exists
+      run: rm -rf ${{ steps.download-path.outputs.result }}
+      shell: bash
+
+    - name: Move Artifact
+      run: mkdir -p ${{ steps.download-path.outputs.result }} && mv artifact_temp/* ${{ steps.download-path.outputs.result }}
       shell: bash
 
     - name: Save Artifact for Next Run
