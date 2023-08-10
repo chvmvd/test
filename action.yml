@@ -1,6 +1,6 @@
 name: Deploy to GitHub Pages and Deploy PR Preview
 author: WATAHIKI Yuto
-description: Deploy to GitHub Pages and Deploy Pull Request Preview using GitHub Actions
+description: Deploy to GitHub Pages and deploy pull request preview using GitHub Actions
 
 runs:
   using: composite
@@ -43,7 +43,7 @@ runs:
         name: github-pages
         path: ${{ steps.download-path.outputs.result }}
 
-    - run: ls -la ${{ steps.download-path.outputs.result }}/artifact.tar
+    - run: ls -la ${{ steps.download-path.outputs.result }}
       shell: bash
 
     - name: Extract Artifact
