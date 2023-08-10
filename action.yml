@@ -44,7 +44,7 @@ runs:
         path: artifact_temp
 
     - name: Extract Artifact
-      run: tar -xzf artifact_temp/artifact.tar && ls -la artifact_temp
+      run: tar -xvzf artifact_temp/artifact.tar && ls -la artifact_temp
       shell: bash
     - run: mv artifact_temp/* ${{ steps.download-path.outputs.result }}
       shell: bash
