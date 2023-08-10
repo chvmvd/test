@@ -44,7 +44,11 @@ runs:
         path: artifact_temp
 
     - name: Extract Artifact
-      run: cd artifact_temp && tar -xvf artifact.tar
+      run: cd artifact_temp && tar -xvf artifact.tar && rm artifact.tar
+      shell: bash
+
+    - name: Remove Old Artifact If Exists
+      run: rm -rf ${{ steps.download-path.outputs.result }}
       shell: bash
 
     - name: Move Artifact
