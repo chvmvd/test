@@ -1,15 +1,31 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <button id="start">開始</button>
+<p id="status">未開始</p>
+<p>Z値: <span id="z">未受信</span></p>
 <script>
-  document.getElementById("start").onclick = async () => {
-    this.disabled = true;
-    await DeviceMotionEvent.requestPermission?.();
+  const start = document.getElementById("start");
+  const status = document.getElementById("status");
+
+  start.onclick = async () => {
+    const permission = await DeviceMotionEvent.requestPermission?.();
+    if (permission === "denied") {
+      status.textContent = "センサーの許可が必要です";
+      return;
+    }
+    start.disabled = true;
+    status.textContent = "センサー待ち。スマホを伏せてください";
     let down = false;
     addEventListener("devicemotion", (e) => {
       const z = e.accelerationIncludingGravity?.z;
-      if (z < -8) down = true;
-      if (down && z > -6) {
+      document.getElementById("z").textContent = z?.toFixed(2) ?? "取得できません";
+      if (z < -8) {
+        down = true;
+        status.textContent = "伏せた。持ち上げ待ち";
+      } else if (down && z > -6) {
         down = false;
-        alert("持ち上げた");
+        status.textContent = "持ち上げた";
       }
     });
   };
