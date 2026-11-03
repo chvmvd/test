@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="ja">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>持ち上げ検知</title>
+<button id="start">開始</button>
+<p id="status">開始後、スマホを伏せてから傾けて持ち上げてください。</p>
+<script>
+const start = document.getElementById('start');
+const status = document.getElementById('status');
+let faceDown = false;
+
+start.onclick = async () => {
+  try {
+    if (!window.isSecureContext) throw new Error('HTTPSで開いてください');
+    if (!window.DeviceMotionEvent) throw new Error('この端末は非対応です');
+    if (typeof DeviceMotionEvent.requestPermission === 'function') {
+      const permission = await DeviceMotionEvent.requestPermission();
+      if (permission !== 'granted') throw new Error('センサーの許可が必要です');
+    }
+    start.disabled = true;
+    status.textContent = 'スマホを伏せてください';
+    window.addEventListener('devicemotion', (event) => {
+      const z = event.accelerationIncludingGravity?.z;
+      if (!Number.isFinite(z)) return;
+      if (z < -8) {
+        faceDown = true;
+        status.textContent = '伏せた';
+      } else if (faceDown && z > -6) {
+        faceDown = false;
+        status.textContent = '持ち上げた';
+      }
+    });
+  } catch (error) {
+    status.textContent = error.message;
+  }
+};
+</script>
+</html>
