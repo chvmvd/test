@@ -1,32 +1,16 @@
-<!doctype html>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
 <button id="start">開始</button>
-<p id="status">未開始</p>
-<p>Z値: <span id="z">未受信</span></p>
+<p>スマホの向き: <span id="orientation">—</span></p>
 <script>
   const start = document.getElementById("start");
-  const status = document.getElementById("status");
 
   start.onclick = async () => {
-    const permission = await DeviceMotionEvent.requestPermission?.();
-    if (permission === "denied") {
-      status.textContent = "センサーの許可が必要です";
-      return;
-    }
+    await DeviceOrientationEvent.requestPermission?.();
     start.disabled = true;
-    status.textContent = "センサー待ち。スマホを伏せてください";
-    let down = false;
-    addEventListener("devicemotion", (e) => {
-      const z = e.accelerationIncludingGravity?.z;
-      document.getElementById("z").textContent = z?.toFixed(2) ?? "取得できません";
-      if (z < -8) {
-        down = true;
-        status.textContent = "伏せた。持ち上げ待ち";
-      } else if (down && z > -6) {
-        down = false;
-        status.textContent = "持ち上げた";
-      }
+    addEventListener("deviceorientation", (e) => {
+      if (e.beta == null || e.gamma == null) return;
+      const normal = Math.cos(e.beta * Math.PI / 180) * Math.cos(e.gamma * Math.PI / 180);
+      document.getElementById("orientation").textContent =
+        normal > 0.8 ? "画面が上" : normal < -0.8 ? "画面が下" : "傾いている";
     });
   };
 </script>
